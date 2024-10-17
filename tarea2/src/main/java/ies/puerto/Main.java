@@ -1,6 +1,8 @@
 package ies.puerto;
 
 public class Main {
+    public static final long GAMETIME = 10000;
+
     public static void main(String[] args) throws InterruptedException{
         Mapa mapa = new Mapa(5);  
         Cazador cazador1 = new Cazador("1", mapa);
@@ -15,12 +17,14 @@ public class Main {
         mapa.generarMonstruo(new Monstruo("M"));
         mapa.generarMonstruo(new Monstruo("M"));
 
+        long startTime = System.currentTimeMillis();
         thread1.start(); 
         thread2.start();        
 
-        while(thread1.isAlive() && thread2.isAlive()){
+        while((thread1.isAlive() && thread2.isAlive()) && (System.currentTimeMillis()-startTime < GAMETIME)){
             pintarMapa(mapa);
         }
+        System.out.println("Fin de la partida");
     }
 
     public static void pintarMapa(Mapa mapa) throws InterruptedException{
@@ -28,14 +32,14 @@ public class Main {
         for(int i = 0; i < ubicaciones.length; i++){
             for(int j = 0; j <= ubicaciones.length-1; j++){
                 if(ubicaciones[i][j] != null){
-                    System.out.print(ubicaciones[i][j].getNombre() + " ");
+                    System.out.print(" "+ubicaciones[i][j].getNombre());
                 } else {
-                    System.out.print(". ");
+                    System.out.print(" ·");
                 }
             }
             System.out.println("");
         }
         System.out.println("");
-        Thread.sleep(1500);
+        Thread.sleep(1000);
     }
 }
