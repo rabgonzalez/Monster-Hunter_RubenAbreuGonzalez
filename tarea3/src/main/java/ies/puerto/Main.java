@@ -42,9 +42,9 @@ public class Main {
         for(int i = 0; i < ubicaciones.length; i++){
             for(int j = 0; j <= ubicaciones.length-1; j++){
                 if(ubicaciones[i][j] == null){
-                    System.out.print(". ");
+                    System.out.print(" ·");
                 } else {
-                    System.out.print(ubicaciones[i][j].getNombre() + " ");
+                    System.out.print(" "+ubicaciones[i][j].getNombre());
                 }
             }
             System.out.println("");

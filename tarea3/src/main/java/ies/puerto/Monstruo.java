@@ -2,7 +2,7 @@ package ies.puerto;
 
 public class Monstruo extends Personaje implements Runnable{
     private boolean cazado = false;
-    private static final long TIEMPOVIDA = 10000;
+    private static final long TIEMPOVIDA = 12000;
 
     public boolean isCazado() {
         return this.cazado;
