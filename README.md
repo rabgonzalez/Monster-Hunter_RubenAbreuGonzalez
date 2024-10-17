@@ -1,2 +1,3 @@
-# Monster-Hunter_RubenAbreuGonzalez
+# Monster-Hunter
+## RubenAbreuGonzalez
 Repositorio  dedicado a subir las tareas relacionadas con Monster Hunter de la asignatura PGV-2DAM 2024/2025
