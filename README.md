@@ -20,7 +20,7 @@
  M · · M ·
 ```
 
-- 
+- Estadísticas:
 ```
  1 ha capturado a 1 mounstruos!
 ```
