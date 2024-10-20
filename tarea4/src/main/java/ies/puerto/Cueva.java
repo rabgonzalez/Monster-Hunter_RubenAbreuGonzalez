@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class Cueva extends Personaje {
 
-    private static final Semaphore semaphore = new Semaphore(1);
+    public static final Semaphore SEMAPHORE = new Semaphore(2, true);
 
     public Cueva() {
     }

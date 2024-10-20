@@ -1,6 +1,7 @@
 package ies.puerto;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class Mapa {
     private int size;
@@ -78,18 +79,16 @@ public class Mapa {
         return true;
     }
 
-    public synchronized void moverCazador(Cazador cazador, int[] nuevaPosicion){
-        if(getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] instanceof Cazador){
-            moverCazador(cazador, generarUbicacionAleatoria());
+    public synchronized void generarCueva(Cueva cueva){
+        if(getUbicaciones()[cueva.getPosicion()[0]][cueva.getPosicion()[1]]!= null){
             return;
         }
 
-        // Si el cazador ya tiene posicion, la eliminamos.
-        if(cazador.getPosicion() != null){
-            int[] posicionAnterior = cazador.getPosicion();
-            getUbicaciones()[posicionAnterior[0]][posicionAnterior[1]] = null;
-        }
-        
+        getUbicaciones()[cueva.getPosicion()[0]][cueva.getPosicion()[1]] = cueva;
+        cueva.setPosicion(cueva.getPosicion());
+    }
+
+    public synchronized void moverCazador(Cazador cazador, int[] nuevaPosicion){
         // Si en esa posición hay un monstruo y este muere, el cazador obtiene una kill y el monstruo es cazado.
         if(getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] instanceof Monstruo){
             Monstruo monstruo = (Monstruo) getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]];
@@ -100,11 +99,33 @@ public class Mapa {
             }
         }
 
+        if(getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] instanceof Personaje){
+            moverCazador(cazador, generarUbicacionAleatoria());
+            return;
+        }
+
+        // Si el cazador ya tiene posicion, la eliminamos.
+        if(cazador.getPosicion() != null){
+            int[] posicionAnterior = cazador.getPosicion();
+            getUbicaciones()[posicionAnterior[0]][posicionAnterior[1]] = null;
+        }
+
         getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] = cazador;
         cazador.setPosicion(nuevaPosicion);
     }
 
     public synchronized void moverMonstruo(Monstruo monstruo, int[] nuevaPosicion){
+        if(getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] instanceof Cueva){
+            Cueva cueva = (Cueva)  getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]];
+            try{
+                if(cueva.SEMAPHORE.tryAcquire(0, TimeUnit.SECONDS)){
+                    refugiarse(cueva, monstruo);
+                }
+            } catch(InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+
         if(getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] instanceof Personaje){
             moverMonstruo(monstruo, generarUbicacionAleatoria());
             return;
@@ -118,5 +139,36 @@ public class Mapa {
 
         getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] = monstruo;
         monstruo.setPosicion(nuevaPosicion);
+    }
+
+    public synchronized void refugiarse(Cueva cueva, Monstruo monstuo){
+        try{
+            cueva.SEMAPHORE.acquire();
+            System.out.println("un monstruo se ha escondido en la cueva");
+
+            Thread.sleep(2000);
+            cueva.SEMAPHORE.release();
+        } catch(InterruptedException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void pintarMapa(Mapa mapa) throws InterruptedException{
+        // Limpia la consola usando secuencias de escape ANSI
+        //System.out.print("\033[H\033[2J");
+        //System.out.flush();  // Asegura que se limpie inmediatamente
+
+        Personaje[][] ubicaciones = mapa.getUbicaciones();
+        for(int i = 0; i < ubicaciones.length; i++){
+            for(int j = 0; j <= ubicaciones.length-1; j++){
+                if(ubicaciones[i][j] == null){
+                    System.out.print(". ");
+                } else {
+                    System.out.print(ubicaciones[i][j].getNombre() + " ");
+                }
+            }
+            System.out.println("");
+        }
+        System.out.println("");
     }
 }

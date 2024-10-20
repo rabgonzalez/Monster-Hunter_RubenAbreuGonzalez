@@ -6,8 +6,11 @@ public class Main {
     public static void main(String[] args) throws InterruptedException{
         Mapa mapa = new Mapa(4); 
 
-        Cazador cazador1 = new Cazador("C", mapa);
-        Cazador cazador2 = new Cazador("C", mapa);
+        Cueva cueva = new Cueva("C", mapa, mapa.generarUbicacionAleatoria());
+        mapa.generarCueva(cueva);
+        
+        Cazador cazador1 = new Cazador("H", mapa);
+        Cazador cazador2 = new Cazador("H", mapa);
         Monstruo monstruo1 = new Monstruo("M", mapa);
         Monstruo monstruo2 = new Monstruo("M", mapa);
         Monstruo monstruo3 = new Monstruo("M", mapa);
@@ -26,29 +29,10 @@ public class Main {
         thread5.start();      
 
         while((thread1.isAlive() && thread2.isAlive()) && (System.currentTimeMillis() - startTime < TIEMPOPARTIDA)){
-            pintarMapa(mapa);
+            mapa.pintarMapa(mapa);
             System.out.println("Monstruos cazados: "+Cazador.kills);
             Thread.sleep(1000);
         }
         System.out.println("\rFin de la partida");
-    }
-
-    public static void pintarMapa(Mapa mapa) throws InterruptedException{
-        // Limpia la consola usando secuencias de escape ANSI
-        System.out.print("\033[H\033[2J");
-        System.out.flush();  // Asegura que se limpie inmediatamente
-
-        Personaje[][] ubicaciones = mapa.getUbicaciones();
-        for(int i = 0; i < ubicaciones.length; i++){
-            for(int j = 0; j <= ubicaciones.length-1; j++){
-                if(ubicaciones[i][j] == null){
-                    System.out.print(". ");
-                } else {
-                    System.out.print(ubicaciones[i][j].getNombre() + " ");
-                }
-            }
-            System.out.println("");
-        }
-        System.out.println("");
     }
 }
