@@ -5,9 +5,12 @@
 - La mitad de los monstruos se pueden esconder en una cueva simultáneamente.
 ---
 #### Salida del juego:
-- Mapa (se actualiza cada segundo)
 ```
-```
-- Estadísticas
-```
+un monstruo se ha escondido en la cueva
+M C . . 
+. . . . 
+. . . . 
+H H . . 
+
+Monstruos cazados: 0
 ```
