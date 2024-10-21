@@ -68,27 +68,27 @@ public class Mapa {
         return new int[]{x,y};
     }
 
-    public boolean atacar(Monstruo monstruo, Cazador cazador, int[] posicion){
+    public boolean atacar(){
         Random random = new Random();
         int probabilidad = random.nextInt(10) + 1;
 
-        if(probabilidad > getPROBABILIDAD()){
-            return false;
-        }
-        monstruo.setVida(monstruo.getVida()-cazador.getDamage());
-        if(monstruo.getVida() <= 0){
-            getUbicaciones()[posicion[0]][posicion[1]] = null;
-        }
-        return true;
+        return (probabilidad > getPROBABILIDAD());
     }
 
     public synchronized void generarCueva(Cueva cueva){
-        if(getUbicaciones()[cueva.getPosicion()[0]][cueva.getPosicion()[1]]!= null){
-            return;
-        }
-
         getUbicaciones()[cueva.getPosicion()[0]][cueva.getPosicion()[1]] = cueva;
         cueva.setPosicion(cueva.getPosicion());
+    }
+
+    public synchronized void generarBonificador(){
+        int[] posicion = generarUbicacionAleatoria();
+        if(getUbicaciones()[posicion[0]][posicion[1]] != null){
+            generarBonificador();
+            return;
+        }
+        Bonificador bonificador = new Bonificador("B", this);
+        getUbicaciones()[posicion[0]][posicion[1]] = bonificador;
+        bonificador.setPosicion(posicion);
     }
 
     public synchronized void moverCazador(Cazador cazador, int[] nuevaPosicion){
@@ -98,14 +98,30 @@ public class Mapa {
             getUbicaciones()[posicionAnterior[0]][posicionAnterior[1]] = null;
         }
 
-        // Si en esa posición hay un monstruo y este muere, el cazador obtiene una kill y el monstruo es cazado.
+        // Si en esa posición hay un monstruo, el cazador le intenta atacar.
         if(getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] instanceof Monstruo){
             Monstruo monstruo = (Monstruo) getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]];
             
-            if(atacar(monstruo, cazador, nuevaPosicion)){
-                monstruo.setCazado(true);
-                Cazador.kills++;
+            if(atacar()){
+                monstruo.setVida(monstruo.getVida() - cazador.getDamage());
+
+                // si el monstruo muere, el cazador obtiene una eliminacion
+                if(monstruo.getVida() <= 0){
+                    getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] = null;
+                    monstruo.setCazado(true);
+                    Cazador.kills++;
+                }
             }
+        }
+
+        // Si un cazador obtiene una bonificación, ese cazador obtendrá 50 más de daño por disparo
+        if(getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] instanceof Bonificador){
+            Bonificador bonificador = (Bonificador) getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]];
+            cazador.setDamage(cazador.getDamage()+bonificador.getBonificacion());
+
+            getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] = null;
+
+            System.out.println("un cazador ha cogido un bonificador!");
         }
 
         if(getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] instanceof Personaje){
@@ -124,15 +140,26 @@ public class Mapa {
             getUbicaciones()[posicionAnterior[0]][posicionAnterior[1]] = null;
         }
 
+        // Si el monstruo cae en una cueva, este intentará refugiarse en ella
         if(getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] instanceof Cueva){
             Cueva cueva = (Cueva) getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]];
             try{
                 if(cueva.semaphore.tryAcquire(0, TimeUnit.SECONDS)){
-                    refugiarse(cueva, monstruo);
+                    refugiarse(cueva);
                 }
             } catch(InterruptedException e){
                 e.printStackTrace();
             }
+        }
+
+        // Si un monstruo coge un bonificador, este obtendrá 50 de vida
+        if(getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] instanceof Bonificador){
+            Bonificador bonificador = (Bonificador) getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]];
+            monstruo.setVida(monstruo.getVida()+bonificador.getBonificacion());
+
+            getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] = null;
+
+            System.out.println("un Monstruo ha cogido un bonificador!");
         }
 
         if(getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] instanceof Personaje){
@@ -144,12 +171,12 @@ public class Mapa {
         monstruo.setPosicion(nuevaPosicion);
     }
 
-    public synchronized void refugiarse(Cueva cueva, Monstruo monstuo){
+    public void refugiarse(Cueva cueva){
         try{
             cueva.semaphore.acquire();
-            System.out.println("un monstruo se ha escondido en la cueva");
+            System.out.println("Un Monstruo se ha escondido en la cueva");
 
-            Thread.sleep(2000);
+            Thread.sleep(5000);
         } catch(InterruptedException e){
             e.printStackTrace();
         } finally {
@@ -163,8 +190,9 @@ public class Mapa {
         //System.out.flush();  // Asegura que se limpie inmediatamente
 
         Personaje[][] ubicaciones = mapa.getUbicaciones();
+
         for(int i = 0; i < ubicaciones.length; i++){
-            for(int j = 0; j <= ubicaciones.length-1; j++){
+            for(int j = 0; j < ubicaciones.length; j++){
                 if(ubicaciones[i][j] == null){
                     System.out.print(". ");
                 } else {

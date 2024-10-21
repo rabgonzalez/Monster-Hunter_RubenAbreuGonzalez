@@ -81,5 +81,6 @@ public class Monstruo extends Personaje implements Runnable{
             }
             getMapa().getUbicaciones()[getPosicion()[0]][getPosicion()[1]] = null;
         }
+        System.out.println("Un Monstruo ha desaparecido");
     }
 }

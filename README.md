@@ -6,11 +6,14 @@
 ---
 #### Salida del juego:
 ```
-un monstruo se ha escondido en la cueva
-M C . . 
-. . . . 
-. . . . 
-H H . . 
+. h B . . 
+m . . . . 
+m . C . . 
+m . . . m 
+h . . . . 
 
-Monstruos cazados: 0
+Monstruos cazados: 1
+Un Monstruo se ha escondido en la cueva
+Un Monstruo ha desaparecido
+un Cazador ha cogido un bonificador!
 ```

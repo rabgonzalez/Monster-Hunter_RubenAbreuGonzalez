@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Cazador extends Personaje implements Runnable{
     public static int kills = 0;
-    public int damage;
+    private int damage;
 
     public Cazador() {
     }
@@ -71,6 +71,7 @@ public class Cazador extends Personaje implements Runnable{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            getMapa().getUbicaciones()[getPosicion()[0]][getPosicion()[1]] = null;
         }
     }
 }

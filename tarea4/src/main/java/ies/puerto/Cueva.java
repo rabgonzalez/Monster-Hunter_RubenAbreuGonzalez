@@ -31,11 +31,6 @@ public class Cueva extends Personaje {
         this.cantidad = cantidad;
     }
 
-    public Cueva cantidad(int cantidad) {
-        setCantidad(cantidad);
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == this)
