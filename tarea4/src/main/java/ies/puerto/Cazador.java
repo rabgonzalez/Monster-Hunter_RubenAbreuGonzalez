@@ -4,6 +4,7 @@ import java.util.Objects;
 
 public class Cazador extends Personaje implements Runnable{
     public static int kills = 0;
+    public int damage;
 
     public Cazador() {
     }
@@ -14,10 +15,20 @@ public class Cazador extends Personaje implements Runnable{
 
     public Cazador(String nombre, Mapa mapa) {
         super(nombre, mapa);
+        damage = 50;
     }
 
     public Cazador(String nombre, Mapa mapa, int[] posicion) {
         super(nombre, mapa, posicion);
+        damage = 50;
+    }
+
+    public int getDamage() {
+        return this.damage;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
     }
 
     @Override
@@ -47,7 +58,7 @@ public class Cazador extends Personaje implements Runnable{
         int[] nuevaPosicion = null;
         int contador = 0;
 
-        while(kills < 3){
+        while(true){
             nuevaPosicion = getMapa().generarUbicacionAleatoria();
             getMapa().moverCazador(this, nuevaPosicion);
 
@@ -55,13 +66,8 @@ public class Cazador extends Personaje implements Runnable{
                 contador = kills;
             }
 
-            if(kills == 3){
-                System.out.println("Todos los monstruos han sido capturados");
-                break;
-            }
-
             try {
-                Thread.sleep(1000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
