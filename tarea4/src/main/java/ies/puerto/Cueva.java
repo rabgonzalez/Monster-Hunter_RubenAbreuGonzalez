@@ -3,7 +3,7 @@ package ies.puerto;
 import java.util.concurrent.Semaphore;
 import java.util.Objects;
 
-public class Cueva extends Personaje {
+public class Cueva extends Personaje implements Runnable {
     private int cantidad;
     public static Semaphore semaphore;
 
@@ -52,5 +52,18 @@ public class Cueva extends Personaje {
         return "{" +
             " cantidad='" + getCantidad() + "'" +
             "}";
+    }
+
+    @Override
+    public void run() {
+        try{
+            System.out.println("Un Monstruo se ha escondido en la cueva");
+
+            Thread.sleep(5000);
+        } catch(InterruptedException e){
+            e.printStackTrace();
+        } finally {
+            semaphore.release();
+        }
     }
 }

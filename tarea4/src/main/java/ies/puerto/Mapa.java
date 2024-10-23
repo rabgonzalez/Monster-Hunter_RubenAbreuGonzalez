@@ -143,7 +143,7 @@ public class Mapa {
             Cueva cueva = (Cueva) getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]];
             try{
                 if(cueva.semaphore.tryAcquire(0, TimeUnit.SECONDS)){
-                    refugiarse(cueva);
+                    new Thread(cueva).start();
                 }
             } catch(InterruptedException e){
                 e.printStackTrace();
@@ -167,19 +167,6 @@ public class Mapa {
 
         getUbicaciones()[nuevaPosicion[0]][nuevaPosicion[1]] = monstruo;
         monstruo.setPosicion(nuevaPosicion);
-    }
-
-    public void refugiarse(Cueva cueva){
-        try{
-            cueva.semaphore.acquire();
-            System.out.println("Un Monstruo se ha escondido en la cueva");
-
-            Thread.sleep(5000);
-        } catch(InterruptedException e){
-            e.printStackTrace();
-        } finally {
-            cueva.semaphore.release();
-        }
     }
 
     public static void pintarMapa(Mapa mapa) throws InterruptedException{
