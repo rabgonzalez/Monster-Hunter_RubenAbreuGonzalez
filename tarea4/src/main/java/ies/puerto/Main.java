@@ -11,9 +11,11 @@ public class Main {
         Cazador cazador2 = new Cazador("H", mapa);
 
         Cueva cueva = new Cueva("C", mapa, mapa.generarUbicacionAleatoria(), monstruos);
+        Bonificador bonificador = new Bonificador("B", mapa);
+        
 
         mapa.generarCueva(cueva);
-        mapa.generarBonificador();
+        mapa.generarBonificador(mapa.generarUbicacionAleatoria(), bonificador);
 
         for (int i = 0; i < monstruos; i++) {
             new Thread(new Monstruo("m", mapa)).start();

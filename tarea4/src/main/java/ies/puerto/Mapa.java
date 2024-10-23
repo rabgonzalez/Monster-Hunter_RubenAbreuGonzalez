@@ -80,13 +80,11 @@ public class Mapa {
         cueva.setPosicion(cueva.getPosicion());
     }
 
-    public synchronized void generarBonificador(){
-        int[] posicion = generarUbicacionAleatoria();
+    public synchronized void generarBonificador(int[] posicion, Bonificador bonificador){
         if(getUbicaciones()[posicion[0]][posicion[1]] != null){
-            generarBonificador();
+            generarBonificador(posicion, bonificador);
             return;
         }
-        Bonificador bonificador = new Bonificador("B", this);
         getUbicaciones()[posicion[0]][posicion[1]] = bonificador;
         bonificador.setPosicion(posicion);
     }
