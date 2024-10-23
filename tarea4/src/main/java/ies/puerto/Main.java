@@ -36,6 +36,7 @@ public class Main {
                 System.out.println("todos los monstruos han sido capturados");
                 break;
             }
+            System.out.println("Huecos en la cueva restantes: "+cueva.semaphore.availablePermits());
             Thread.sleep(1000);
         }
         System.out.println("\rFin de la partida");
